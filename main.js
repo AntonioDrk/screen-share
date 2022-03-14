@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, desktopCapturer, ipcMain } = require('electron');
 const path = require('path');
 
 const createWindow = () =>{
@@ -9,7 +9,13 @@ const createWindow = () =>{
             preload: path.join(__dirname, 'preload.js'),
         }
     });
-
+    
+    ipcMain.on('GET_SOURCES', async () =>{
+        const inputSources = await desktopCapturer.getSources({
+            types: ['window', 'screen'] 
+        });
+        win.webContents.send('SET_SOURCES', inputSources);
+    });
     win.loadFile(path.join(__dirname,'views','index.html'));
 }
 
