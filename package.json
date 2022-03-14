@@ -1,0 +1,14 @@
+{
+  "name": "screen-share",
+  "version": "1.0.0",
+  "description": "A screen sharing app ",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^17.1.2"
+  }
+}
