@@ -7,12 +7,11 @@ const sourcesContainer = document.getElementById('sources');
 sourceSelectBtn.onclick = getVideoSources;
 
 async function getVideoSources(){
-    const inputSources = await desktopCapturer.getSources({
+    const inputSources = await api.desktopCapturer.getSources({
         types: ['window', 'screen'] 
     });
-
     inputSources.forEach(source => {
-        displaySource(source);
+        console.log(source.name);
     });
 }
 
