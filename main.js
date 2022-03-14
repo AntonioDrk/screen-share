@@ -10,13 +10,14 @@ const createWindow = () =>{
         }
     });
     
-    ipcMain.on('GET_SOURCES', async () =>{
+    ipcMain.handle('GET_SOURCES', async () =>{
         const inputSources = await desktopCapturer.getSources({
             types: ['window', 'screen'] 
         });
-        win.webContents.send('SET_SOURCES', inputSources);
+        return inputSources;
     });
     win.loadFile(path.join(__dirname,'views','index.html'));
+    win.webContents.openDevTools();
 }
 
 app.whenReady().then(()=>{
@@ -29,6 +30,7 @@ app.whenReady().then(()=>{
     });
 });
 
+// Quit when all windows are closed
 app.on('window-all-closed', ()=>{
     if(process.platform !== 'darwin')
         app.quit();
