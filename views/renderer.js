@@ -1,8 +1,11 @@
-document.getElementById('content').textContent = `No of cpus: ${api.cpuNo}`;
-const startBtn = document.getElementById('startSharing');
-const stopBtn = document.getElementById('stopSharing');
+const MAX_TITLE_LENGTH = 25;
+
+
+const stopBtn = document.getElementById('stopShare');
 const sourceSelectBtn = document.getElementById('sourceSelBtn');
 const sourcesContainer = document.getElementById('sources');
+
+stopBtn.onclick = stopShare;
 
 sourceSelectBtn.onclick = async ()=>{
     sourcesContainer.innerHTML = '';
@@ -24,11 +27,12 @@ function addThumbnails(source){
     const thumbnailTitle = document.createElement('p');
     const base64Img = api.getBase64(source);
     
-    thumbnailContainer.classList.add('thumbnail');
+    thumbnailContainer.classList.add('thumbnail', 'card', 'column', 'm-3');
     
-    thumbnailTitle.textContent = source.name;
+    thumbnailTitle.textContent = source.name.trim().slice(0,MAX_TITLE_LENGTH+1) + (source.name.length > MAX_TITLE_LENGTH ? '...' : '');
+    thumbnailTitle.classList.add('title', 'is-4');
 
-    thumbnailImage.classList.add('shareSource');
+    thumbnailImage.classList.add('share-card-img', 'card-image');
     thumbnailImage.src = `data:image/png;base64,${base64Img}`
 
     thumbnailContainer.appendChild(thumbnailImage);
@@ -61,15 +65,21 @@ async function selectSource(sourceId){
 
     // Create stream
     try{
-        console.log(navigator.mediaDevices.getSupportedConstraints());
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        console.log('Stream: ' + stream);
         vidElem.srcObject = stream;
         vidElem.onloadedmetadata = (e) => {
-            console.log('Playing the video\nEvent ' + e);
+            vidElem.classList.remove('is-hidden');
             vidElem.play();
         }
     }catch(e){
         console.log(e);
     }
+}
+
+function stopShare(){
+    const vidElem = document.querySelector('video');
+    vidElem.srcObject.getTracks().forEach(track=>{
+        track.stop();
+    })
+    vidElem.classList.add('is-hidden');
 }

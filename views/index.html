@@ -3,19 +3,42 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./css/bulma.min.css">
+    <link rel="stylesheet" href="./css/style.css">
     <script defer src="./renderer.js"></script>
     <title>Where's the title?</title>
 </head>
 <body>
-    <h1 id="title">Electron Screen Sharing</h1>
-    <div id="content"></div>
-    <video id="videoSrc"></video>
-    <button id="startSharing">Start</button>
-    <button id="stopSharing">Stop</button>
-
-    <button id="sourceSelBtn">Video Source</button>
-    <div id="sources"></div>
-    <footer>Developed by Druker Antonio</footer>
+    <div class="content">
+        <div class="container column is-full has-text-centered">
+            <h1 class="title">Electron Screen Sharing</h1>
+            <h4 class="subtitle">Start your screen sharing by pressing the button below</h2>
+        </div>
+        <div class="section">
+            <div class="container">
+                <div class="columns">
+                    <video class="column is-full is-hidden" id="videoSrc"></video>
+                </div>
+                <div class="columns is-centered is-mobile">
+                    <div class="column is-offset-1">
+                        <button class="button is-pulled-right is-primary" id="sourceSelBtn">Select Video Source</button>
+                    </div>
+                    <div class="column">
+                        <button class="button is-danger" id="stopShare">X</button>
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+        <div class="section">
+            <div id="sources" class="vid-sources columns"></div>
+        </div>        
+        <footer>
+            <div class="container has-text-centered">
+                Developed by Druker Antonio
+            </div>
+        </footer>
+    </div>
 </body>
 </html>
