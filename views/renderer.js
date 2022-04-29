@@ -4,9 +4,14 @@ const MAX_TITLE_LENGTH = 25;
 const stopBtn = document.getElementById('stopShare');
 const sourceSelectBtn = document.getElementById('sourceSelBtn');
 const sourcesContainer = document.getElementById('sources');
-api.onRoomCreatedCallback = roomId => {
-    console.log('Room created with id ' + roomId);
-};
+const createRoomBtn = document.getElementById('createRoomBtnId');
+const joinRoomBtn = document.getElementById('joinRoomBtnId');
+const roomIdInput = document.getElementById('roomInputId');
+
+createRoomBtn.addEventListener('click', (_) => {
+    console.log('Btn clicked');
+    api.createRoom();
+});
 
 stopBtn.onclick = stopShare;
 
@@ -18,7 +23,7 @@ sourceSelectBtn.onclick = async () => {
         addThumbnails(source);
     });
 
-}
+};
 
 /**
  * @param {Electron.DesktopCapturerSource} source
@@ -36,15 +41,24 @@ function addThumbnails(source) {
     thumbnailTitle.classList.add('title', 'is-4');
 
     thumbnailImage.classList.add('share-card-img', 'card-image');
-    thumbnailImage.src = `data:image/png;base64,${base64Img}`
+    thumbnailImage.src = `data:image/png;base64,${base64Img}`;
 
     thumbnailContainer.appendChild(thumbnailImage);
     thumbnailContainer.appendChild(thumbnailTitle);
 
-    thumbnailContainer.onclick = () => { selectSource(source.id) }
+    thumbnailContainer.onclick = () => { selectSource(source.id); };
 
     sourcesContainer.appendChild(thumbnailContainer);
 }
+
+joinRoomBtn.addEventListener('click', async () => {
+    if (roomIdInput.value) {
+        console.log('Trying to join ' + roomIdInput.value);
+        await api.joinRoom(roomIdInput.value);
+    } else {
+        alert('A Room ID must be provieded!');
+    }
+});
 
 function onCreateRoomBtnClick() {
     api.createRoom();
@@ -68,7 +82,7 @@ async function selectSource(sourceId) {
             }
 
         }
-    }
+    };
 
     // Create stream
     try {
@@ -77,8 +91,8 @@ async function selectSource(sourceId) {
         vidElem.onloadedmetadata = (e) => {
             vidElem.classList.remove('is-hidden');
             vidElem.play();
-        }
-        api.startStream(stream);
+        };
+        api.startStream(constraints);
     } catch (e) {
         console.log(e);
     }
@@ -88,6 +102,6 @@ function stopShare() {
     const vidElem = document.querySelector('video');
     vidElem.srcObject.getTracks().forEach(track => {
         track.stop();
-    })
+    });
     vidElem.classList.add('is-hidden');
 }
