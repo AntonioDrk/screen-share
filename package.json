@@ -10,5 +10,9 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^17.1.2"
+  },
+  "dependencies": {
+    "firebase": "^9.6.8",
+    "firebase-admin": "^10.0.2"
   }
 }
