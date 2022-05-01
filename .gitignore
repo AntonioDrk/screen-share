@@ -131,4 +131,5 @@ dist
 
 # JShint config file
 .jshintrc
+build/
 serviceAccount.json
