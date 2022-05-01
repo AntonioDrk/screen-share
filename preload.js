@@ -18,13 +18,35 @@ var sourcesArray = [];
 const servers = {
     iceServers: [
         {
-            urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'],
+            urls: 'stun:openrelay.metered.ca:80',
         },
+        {
+            urls: 'turn:openrelay.metered.ca:80',
+            username: 'openrelayproject',
+            credential: 'openrelayproject',
+        },
+        {
+            urls: 'turn:openrelay.metered.ca:443',
+            username: 'openrelayproject',
+            credential: 'openrelayproject',
+        },
+        {
+            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+            username: 'openrelayproject',
+            credential: 'openrelayproject',
+        }
     ],
     iceCandidatePoolSize: 10,
 };
 
 const pc = new RTCPeerConnection(servers);
+// For debugging only
+window.pc = pc;
+
+pc.addEventListener('connectionstatechange', (event) => {
+    console.warn('Connection state changed to : ' + pc.connectionState);
+    console.warn(pc);
+}, false);
 
 /**
  * @type MediaStream
@@ -38,9 +60,8 @@ let remoteStream = null;
 // Constraints for the mediaDevice
 async function startStream(constraints) {
     // IDK why but we need to get again the media device, can't seem to pass it as a param
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    console.log(stream);
-    localStream = stream;
+    localStream = await navigator.mediaDevices.getUserMedia(constraints);
+    console.log(localStream);
     remoteStream = new MediaStream();
     // Push tracks from local stream to peer conn
     localStream.getVideoTracks().forEach((track) => {
@@ -49,11 +70,18 @@ async function startStream(constraints) {
 
     // Pull tracks from remote stream, add to video stream
     pc.ontrack = event => {
+        console.warn('Received track from peer!');
         event.streams[0].getTracks().forEach(track => {
             remoteStream.addTrack(track);
         });
         // Signal back to the frontend that we received new streams from peers
         onStreamReceived(remoteStream);
+    };
+    const remoteVideo = document.getElementById('remoteVideoId');
+    remoteVideo.srcObject = remoteStream;
+    remoteVideo.onloadedmetadata = (e) => {
+        remoteVideo.classList.remove('is-hidden');
+        remoteVideo.play();
     };
 }
 
@@ -93,7 +121,7 @@ async function createRoom() {
     await callDoc.set({ offer });
 
     // Start listening
-    ipcRenderer.send('ROOM_CREATED');
+    ipcRenderer.send('ROOM_CREATED', callDoc.id);
 
     /*snapshot => {
         const data = snapshot.data();
@@ -124,32 +152,39 @@ async function joinRoom(roomId) {
 
     pc.onicecandidate = event => {
         if (event.candidate) {
+            console.log('A new answerCandidate has joined');
             answerCandidates.add(event.candidate.toJSON());
         }
     };
-
-    const callData = (await callDoc.get()).data();
-
+    console.log('Getting call data');
+    const callData = await ipcRenderer.invoke('GET_DOCBYID', roomId);
+    console.log('Checking offer description');
     const offerDescription = callData.offer;
+    console.log('Setting remote description');
     await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
 
+    console.log('Creating answer');
     const answerDescription = await pc.createAnswer();
+    console.log('Setting local description');
     await pc.setLocalDescription(answerDescription);
+
 
     const answer = {
         type: answerDescription.type,
         sdp: answerDescription.sdp,
     };
-
+    console.log('Updating the callDoc');
     await callDoc.update({ answer });
 
-    ipcRenderer.send('ROOM_JOIN');
+    console.log('Sending ROOM_JOIN signal');
+    ipcRenderer.send('ROOM_JOIN', roomId);
 }
 
-ipcRenderer.on('ON_DOC_CHANGE', (_, data) => {
-    if (!pc.currentRemoteDescription && data && data.answer) {
+ipcRenderer.on('ADD_ANSWER_DESCRIPTION', (_, answer) => {
+    console.log('Received ADD_ANSWER_DESCRIPTION signal');
+    if (!pc.currentRemoteDescription && answer) {
         console.log('Adding answer description');
-        const answerDescription = new RTCSessionDescription(data.answer);
+        const answerDescription = new RTCSessionDescription(answer);
         pc.setRemoteDescription(answerDescription);
     }
 });

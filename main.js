@@ -19,33 +19,51 @@ const createWindow = () => {
         }
     });
 
-    ipcMain.on('ROOM_CREATED', () => {
-        const callDoc = db.collection('calls').doc();
+    ipcMain.on('ROOM_CREATED', (_, docId) => {
+        const callDoc = db.collection('calls').doc(docId);
         const answerCandidates = callDoc.collection('answerCandidates');
         console.log('Adding listeners');
         // Listen for changes
         callDoc.onSnapshot(snapshot => {
             const data = snapshot.data();
-            win.webContents.send('ON_DOC_CHANGE', data);
+            if (data === undefined) {
+                console.log('Document doesn\'t exist');
+            }
+            if (data && data.answer) {
+                console.log('Firing ADD_ANSWER_DESCRIPTION');
+                win.webContents.send('ADD_ANSWER_DESCRIPTION', data.answer);
+            }
         });
 
         // When answered, add candidates to peer connection
         answerCandidates.onSnapshot(snapshot => {
             snapshot.docChanges().forEach(change => {
                 if (change.type === 'added') {
+                    console.log('Firing ADD_ICE_CANDIDATE');
                     win.webContents.send('ADD_ICE_CANDIDATE', change.doc.data());
                 }
             });
         });
     });
 
-    ipcMain.on('ROOM_JOIN', () => {
+    ipcMain.on('ROOM_JOIN', (_, roomId) => {
+        console.log('Got ROOM_JOIN signal');
+        const callDoc = db.collection('calls').doc(roomId);
         const offerCandidates = callDoc.collection('offerCandidates');
         offerCandidates.onSnapshot(snapshot => {
             snapshot.docChanges().forEach(change => {
-                win.webContents.send('ON_DOC_CHANGE', change);
+                if (change.type === 'added') {
+                    console.log('Sending ADD_ICE_CANDIDATE signal with data\n' + change.doc.data());
+                    win.webContents.send('ADD_ICE_CANDIDATE', change.doc.data());
+                }
             });
         });
+    });
+
+    ipcMain.handle('GET_DOCBYID', async (_, docId) => {
+        const callDoc = db.collection('calls').doc(docId);
+        const callData = (await callDoc.get()).data();
+        return callData;
     });
 
     ipcMain.handle('GET_SOURCES', async () => {
@@ -54,106 +72,6 @@ const createWindow = () => {
         });
         return inputSources;
     });
-
-    // // Frontend signals us to start streaming
-    // ipcMain.on('START_STREAM', async (_, stream) => {
-    //     localStream = stream;
-    //     remoteStream = new MediaStream();
-
-    //     // Push tracks from local stream to peer conn
-    //     localStream.getTracks().forEach((track) => {
-    //         pc.addTrack(track, localStream);
-    //     });
-
-    //     // Pull tracks from remote stream, add to video stream
-    //     pc.ontrack = event => {
-    //         event.streams[0].getTracks().forEach(track => {
-    //             remoteStream.addTrack(track);
-    //         });
-    //         // Signal back to the frontend that we received new streams from peers
-    //         win.webContents.send('STREAM_RECEIVED', remoteStream);
-    //     };
-    // });
-
-
-    // ipcMain.on('ROOM_CREATE', async () => {
-    //     const callDoc = db.collection('calls').doc();
-    //     const offerCandidates = callDoc.collection('offerCandidates');
-    //     const answerCandidates = callDoc.collection('answerCandidates');
-
-    //     // Send the id of the created room
-    //     win.webContents.send('ROOM_CREATED', callDoc.id);
-
-    //     pc.onicecandidate = event => {
-    //         event.candidate && offerCandidates.add(event.candidate.toJSON());
-    //     };
-
-    //     // Create the offer
-    //     const offerDescription = await pc.createOffer();
-    //     await pc.setLocalDescription(offerDescription);
-
-    //     const offer = {
-    //         sdp: offerDescription.sdp,
-    //         type: offerDescription.type,
-    //     };
-
-    //     await callDoc.set({ offer });
-
-    //     // Listen for changes
-    //     callDoc.onSnapshot(snapshot => {
-    //         const data = snapshot.data();
-    //         if (!pc.currentRemoteDescription && data?.answer) {
-    //             const answerDescription = new RTCSessionDescription(data.answer);
-    //             pc.setRemoteDescription(answerDescription);
-
-    //         }
-    //     });
-
-    //     // When answered, add candidates to peer connection
-    //     answerCandidates.onSnapshot(snapshot => {
-    //         snapshot.docChanges().forEach(change => {
-    //             if (change.type === 'added') {
-    //                 const candidate = new RTCIceCandidate(change.doc.data());
-    //                 pc.addIceCandidate(candidate);
-    //             }
-    //         });
-    //     });
-    // });
-
-    // ipcMain.on('ROOM_JOIN', async (_, roomId) => {
-    //     const callDoc = db.collection('calls').doc(roomId);
-    //     const offerCandidates = callDoc.collection('offerCandidates');
-    //     const answerCandidates = callDoc.collection('answerCandidates');
-
-    //     pc.onicecandidate = event => {
-    //         event.candidate && answerCandidates.add(event.candidate.toJSON());
-    //     }
-
-    //     const callData = (await callDoc.get()).data();
-
-    //     const offerDescription = callData.offer;
-    //     await pc.setRemoteDescription(new RTCSessionDescription(offerDescription));
-
-    //     const answerDescription = await pc.createAnswer();
-    //     await pc.setLocalDescription(answerDescription);
-
-    //     const answer = {
-    //         type: answerDescription.type,
-    //         sdp: answerDescription.sdp,
-    //     };
-
-    //     await callDoc.update({ answer });
-
-    //     offerCandidates.onSnapshot(snapshot => {
-    //         snapshot.docChanges().forEach(change => {
-    //             console.log(change);
-    //             if (change.type === 'added') {
-    //                 let data = change.doc.data();
-    //                 pc.addIceCandidate(new RTCIceCandidate(data));
-    //             }
-    //         });
-    //     });
-    // });
 
     win.loadFile(join(__dirname, 'views', 'index.html'));
     win.webContents.openDevTools();
