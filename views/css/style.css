@@ -2,22 +2,27 @@ body {
   width: 100%;
 }
 
-.fullscreen {
-  position: fixed  !important; 
-  top: 0  !important;
-  left: 0  !important;
-  bottom: 0  !important;
-  right: 0  !important;
-  overflow: auto  !important;
-  background: black !important;
-  z-index: 2;
+.hide-scrollbars {
+  overflow: hidden;
 }
 
-.control-bar-parent{
+.fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  overflow: auto;
+  background: black !important;
+  z-index: 2;
+  margin-bottom: 0px !important;
+}
+
+.control-bar-parent {
   position: relative;
 }
 
-.control-bar{
+.control-bar {
   position: absolute;
   z-index: 999;
   color: white;
@@ -28,11 +33,11 @@ body {
   text-align: end;
 }
 
-video{
+video {
   position: relative;
 }
 
-#joinRoomBtnId{
+#joinRoomBtnId {
   position: relative;
   top: 38%;
   width: 20%;

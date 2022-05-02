@@ -69,7 +69,7 @@ const createWindow = () => {
 
 	ipcMain.handle('GET_SOURCES', async () => {
 		const inputSources = await desktopCapturer.getSources({
-			types: [ 'window', 'screen' ]
+			types: ['window', 'screen']
 		});
 		return inputSources;
 	});
@@ -86,7 +86,8 @@ const createWindow = () => {
 	});
 
 	win.loadFile(join(__dirname, 'views', 'index.html'));
-	win.webContents.openDevTools();
+	win.menuBarVisible = false;
+	//win.webContents.openDevTools();
 };
 
 app.whenReady().then(() => {
@@ -101,9 +102,11 @@ app.whenReady().then(() => {
 
 // Quit when all windows are closed
 app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') app.quit();
+	if (process.platform !== 'darwin') {
+		app.quit();
+	}
 });
 
 app.on('will-quit', () => {
-	console.log("He's about to quit!!!");
+	//console.log("He's about to quit!!!");
 });
