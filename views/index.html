@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./css/bulma.min.css">
     <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/all.min.js"></script> <!--Font awesome 5-->
     <script defer src="./renderer.js"></script>
     <title>Where's the title?</title>
 </head>
@@ -18,10 +19,22 @@
         </div>
         <div class="section">
             <div class="container">
-                <div class="columns">
-                    <video class="column is-full is-hidden" id="videoSrc"></video>
+                <div class="columns control-bar-parent">
+                    <div class="control-bar is-hidden">
+                        <span class="icon" id="maximizeBtnId">
+                            <i class="fas fa-expand"></i>
+                        </span>
+                    </div>
+                    <video class="column is-full is-hidden" id="localVideoId"></video>
                 </div>
-                <video class="column is-full" id="remoteVideoId"></video>
+                <div class="columns control-bar-parent">
+                    <div class="control-bar is-hidden">
+                        <span class="icon" id="maximizeBtnId">
+                            <i class="fas fa-expand"></i>
+                        </span>
+                    </div>
+                    <video class="column is-full is-hidden" id="remoteVideoId"></video>
+                </div>
                 <div class="columns is-centered is-mobile">
                     <div class="column is-offset-1">
                         <button class="button is-pulled-right is-primary" id="sourceSelBtn">Select Video Source</button>
@@ -38,12 +51,25 @@
             <div id="sources" class="vid-sources columns"></div>
         </div>
         <div class="section">
-            <button id="createRoomBtnId">Create Room</button>
+            <div class="columns is-centered is-mobile">
+                <div class="column is-4 has-text-centered is-inline">
+                    <p id="roomTextIndetifierId"></p>
+                    <button class="button is-primary" id="createRoomBtnId">Create Room</button>
+                </div>
+            </div>
         </div>
         <div class="section">
-            <label for="RoomId">Room Id:</label>
-            <input id="roomInputId" name="RoomId" type="text">
-            <button id="joinRoomBtnId">Join</button>
+            <div class="columns is-centered">
+                <div class="column is-4">
+                    <label class="field-label" for="RoomId">Room Id:</label>
+                    <input class="input" id="roomInputId" name="RoomId" type="text">
+                </div>
+            </div>
+            <div class="columns is-center is-mobile">
+                <div class="column is-offset-4 is-4 has-text-centered">
+                    <button class="button is-warning is-narrow" id="joinRoomBtnId">Join</button>
+                </div>
+            </div>
         </div>
         <footer>
             <div class="container has-text-centered">

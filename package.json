@@ -9,8 +9,6 @@
     "start": "electron .",
     "build": "electron-builder"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "electron": "^17.1.2",
     "electron-builder": "^23.0.3"
@@ -19,14 +17,14 @@
     "firebase": "^9.6.8",
     "firebase-admin": "^10.0.2"
   },
-  "build":{
+  "build": {
     "appId": "com.antoniodrk.screenshareapp",
     "productName": "Screen Share App",
     "target": "NSIS",
     "directories": {
       "output": "build"
     },
-    "nsis":{
+    "nsis": {
       "allowToChangeInstallationDirectory": true,
       "oneClick": false
     }

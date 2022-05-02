@@ -2,11 +2,40 @@ body {
   width: 100%;
 }
 
-footer {
+.fullscreen {
+  position: fixed  !important; 
+  top: 0  !important;
+  left: 0  !important;
+  bottom: 0  !important;
+  right: 0  !important;
+  overflow: auto  !important;
+  background: black !important;
+  z-index: 2;
+}
+
+.control-bar-parent{
+  position: relative;
+}
+
+.control-bar{
   position: absolute;
-  bottom: 0;
-  left: 25%;
-  right: 25%;
+  z-index: 999;
+  color: white;
+  background-color: rgba(5%, 5%, 5%, 25%);
+  width: 96%;
+  margin: 0.75rem;
+  bottom: 0px;
+  text-align: end;
+}
+
+video{
+  position: relative;
+}
+
+#joinRoomBtnId{
+  position: relative;
+  top: 38%;
+  width: 20%;
 }
 
 .share-card-img {
