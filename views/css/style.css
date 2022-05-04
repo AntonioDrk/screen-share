@@ -27,14 +27,16 @@ body {
   z-index: 999;
   color: white;
   background-color: rgba(5%, 5%, 5%, 25%);
-  width: 96%;
+  width: 720px;
   margin: 0.75rem;
+  left: 20%;
   bottom: 0px;
   text-align: end;
 }
 
 video {
-  position: relative;
+  width: 720px;
+  height: 480px;
 }
 
 #joinRoomBtnId {
@@ -50,6 +52,25 @@ video {
 .vid-sources {
   margin-left: 7.5%;
   margin-right: 7.5%;
+}
+
+.hr-sect {
+  display: flex;
+  flex-basis: 100%;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.35);
+  margin: 8px 0px;
+}
+
+.hr-sect:before,
+.hr-sect:after {
+  content: "";
+  flex-grow: 1;
+  background: rgba(0, 0, 0, 0.35);
+  height: 1px;
+  font-size: 0px;
+  line-height: 0px;
+  margin: 0px 8px;
 }
 
 /* .thumbnail:hover {
