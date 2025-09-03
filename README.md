@@ -5,4 +5,4 @@
 A desktop app aimed for bringing screen/app sharing between two people for free, for full HD capabilities
 
 # Technologies
-Developed with **Electron** for the application layer, **webRTC** for the communication layer, **firebase** for the data storing, **bulma** as a lightweight frontend library.
+Developed with **[Electron](https://www.electronjs.org/)** for the application layer, **[webRTC](https://webrtc.org/)** for the communication layer, **[Firebase](https://firebase.google.com/)** for the data storing and the connection and connection starting, **[bulma](https://bulma.io/)** as a opensource frontend library.
